@@ -20,7 +20,7 @@
 # using the `go install` command 
 
 ```bash
-go install https://github.com/SuperninjaXII/Fiber-generator@latest
+go install github.com/SuperninjaXII/Fiber-generator/cmd/@latest
 ```
 # using the binaries in the release page
 
