@@ -17,10 +17,16 @@
 
 ## Installation
 
-use the `go install command`
+# using the `go install` command 
 
 ```bash
 go install https://github.com/SuperninjaXII/Fiber-generator@latest
+```
+# using the binaries in the release page
 
-
-
+## Usage
+the `fiber-gen` cli app accepts a `--name` flag . the name provided will be used in the `go mod init`
+and make file
+```bash
+fiber-gen --name my-project
+```

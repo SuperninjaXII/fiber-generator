@@ -94,7 +94,7 @@ func generate(ctx *cli.Context) error {
 
 func main() {
 	app := &cli.App{
-		Name:  "fiber-generator",
+		Name:  "fiber-gen",
 		Usage: "generate go fiber templates",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
