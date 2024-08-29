@@ -1,7 +1,7 @@
 package main
 
 import (
-	"{AppName}/routes"
+	"test/routes"
 	"log"
 
 	"github.com/gofiber/fiber/v2"

@@ -7,22 +7,36 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
 
 var baseDir string
 
+// readTemplateFile reads the content of a template file and replaces {AppName} with the baseDir.
 func readTemplateFile(filePath string) (string, error) {
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return "", fmt.Errorf("error reading file %s: %w", filePath, err)
 	}
 	contentStr := string(content)
-	strings.Replace(contentStr, "{AppName}", baseDir, -1)
+	contentStr = strings.Replace(contentStr, "{AppName}", baseDir, -1) // Ensure replacement takes effect
 	return contentStr, nil
 }
 
+// runGoModInit runs the 'go mod init' command in the specified baseDir.
+func runGoModInit(baseDir string) error {
+	cmd := exec.Command("go", "mod", "init", baseDir)
+	cmd.Dir = baseDir // Set the working directory to the baseDir
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("error running 'go mod init %s': %s", baseDir, string(output))
+	}
+	fmt.Printf("Successfully initialized Go module: %s\n", baseDir)
+	return nil
+}
+
+// generate handles the generation of the project structure, templates, and initializes the Go module.
 func generate(ctx *cli.Context) error {
 	fmt.Println("generating")
 
@@ -44,6 +58,7 @@ func generate(ctx *cli.Context) error {
 		filepath.Join(routesDir, "userRoutes.go"):             filepath.Join("cmd", "templates", "go", "userRoutes.go"),
 		filepath.Join(controllersDir, "CreateUserHandler.go"): filepath.Join("cmd", "templates", "go", "userHandler.go"),
 		filepath.Join(baseDir, "app.go"):                      filepath.Join("cmd", "templates", "go", "app.go"),
+		filepath.Join(baseDir, "Makefile"):                      filepath.Join("cmd", "templates", "Makefile"),
 	}
 
 	// Create directories
@@ -63,6 +78,11 @@ func generate(ctx *cli.Context) error {
 		if err := utils.CreateFile(filePath, content); err != nil {
 			return fmt.Errorf("error creating file %s: %w", filePath, err)
 		}
+	}
+
+	// Run go mod init
+	if err := runGoModInit(baseDir); err != nil {
+		return err
 	}
 
 	fmt.Println("done generating views")
