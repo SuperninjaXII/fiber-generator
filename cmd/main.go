@@ -3,12 +3,12 @@ package main
 import (
 	"fiber-generator/cmd/utils"
 	"fmt"
+	"github.com/urfave/cli/v2"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/urfave/cli/v2"
+	"strings"
 )
 
 var baseDir string
@@ -18,7 +18,9 @@ func readTemplateFile(filePath string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error reading file %s: %w", filePath, err)
 	}
-	return string(content), nil
+	contentStr := string(content)
+	strings.Replace(contentStr, "{AppName}", baseDir, -1)
+	return contentStr, nil
 }
 
 func generate(ctx *cli.Context) error {
@@ -88,4 +90,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-

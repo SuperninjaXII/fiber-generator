@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"papernet/controllers"
+	"{AppName}/controllers"
 
 	"github.com/gofiber/fiber/v2"
 )
