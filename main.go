@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fiber-gen/utils"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -9,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/SuperninjaXII/Fiber-generator/utils"
 
 	"github.com/urfave/cli/v2"
 )
@@ -111,4 +112,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
