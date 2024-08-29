@@ -3,26 +3,25 @@ package main
 import (
 	"embed"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 
-	"github.com/SuperninjaXII/Fiber-generator/utils"
-
 	"github.com/urfave/cli/v2"
 )
 
-var (
-	templateFs embed.FS
-	baseDir    string
-)
+// Embed the templates directory
+//
+//go:embed templates/*
+var templateFs embed.FS
+
+var baseDir string
 
 // readTemplateFile reads the content of a template file and replaces {AppName} with the baseDir.
 func readTemplateFile(filePath string) (string, error) {
-	content, err := ioutil.ReadFile(filePath)
+	content, err := templateFs.ReadFile(filePath)
 	if err != nil {
 		return "", fmt.Errorf("error reading file %s: %w", filePath, err)
 	}
@@ -57,20 +56,20 @@ func generate(ctx *cli.Context) error {
 
 	// Define template paths
 	templatePaths := map[string]string{
-		filepath.Join(viewDir, "index.html"):                  filepath.Join("templates", "html", "index.html"),
-		filepath.Join(publicCSSDir, "style.css"):              filepath.Join("templates", "css", "style.css"),
-		filepath.Join(publicJSDir, "app.js"):                  filepath.Join("templates", "js", "index.js"),
-		filepath.Join(publicLibDir, "htmx.min.js"):            filepath.Join("templates", "lib", "htmx.min.js"), // Adjust as needed
-		filepath.Join(routesDir, "userRoutes.go"):             filepath.Join("templates", "go", "userRoutes.go"),
-		filepath.Join(controllersDir, "CreateUserHandler.go"): filepath.Join("templates", "go", "userHandler.go"),
-		filepath.Join(baseDir, "app.go"):                      filepath.Join("templates", "go", "app.go"),
-		filepath.Join(baseDir, "Makefile"):                    filepath.Join("templates", "Makefile"),
+		filepath.Join(viewDir, "index.html"):                  "templates/html/index.html",
+		filepath.Join(publicCSSDir, "style.css"):              "templates/css/style.css",
+		filepath.Join(publicJSDir, "app.js"):                  "templates/js/index.js",
+		filepath.Join(publicLibDir, "htmx.min.js"):            "templates/lib/htmx.min.js", // Adjust as needed
+		filepath.Join(routesDir, "userRoutes.go"):             "templates/go/userRoutes.go",
+		filepath.Join(controllersDir, "CreateUserHandler.go"): "templates/go/userHandler.go",
+		filepath.Join(baseDir, "app.go"):                      "templates/go/app.go",
+		filepath.Join(baseDir, "Makefile"):                    "templates/Makefile",
 	}
 
 	// Create directories
 	dirs := []string{viewDir, publicCSSDir, publicJSDir, publicLibDir, routesDir, controllersDir}
 	for _, dir := range dirs {
-		if err := utils.CreateDir(dir); err != nil {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			return fmt.Errorf("error creating directory %s: %w", dir, err)
 		}
 	}
@@ -81,7 +80,7 @@ func generate(ctx *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		if err := utils.CreateFile(filePath, content); err != nil {
+		if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
 			return fmt.Errorf("error creating file %s: %w", filePath, err)
 		}
 	}
