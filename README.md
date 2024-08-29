@@ -28,5 +28,5 @@ go install github.com/SuperninjaXII/Fiber-generator@latest
 the `fiber-gen` cli app accepts a `--name` flag . the name provided will be used in the `go mod init`
 and make file
 ```bash
-fiber-gen --name my-project
+fiber-generator --name my-project
 ```
