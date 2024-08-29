@@ -1,15 +1,16 @@
 package main
 
 import (
-	"fiber-generator/cmd/utils"
+	"fiber-gen/utils"
 	"fmt"
-	"github.com/urfave/cli/v2"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/urfave/cli/v2"
 )
 
 var baseDir string
@@ -51,14 +52,14 @@ func generate(ctx *cli.Context) error {
 
 	// Define template paths
 	templatePaths := map[string]string{
-		filepath.Join(viewDir, "index.html"):                  filepath.Join("cmd", "templates", "html", "index.html"),
-		filepath.Join(publicCSSDir, "style.css"):              filepath.Join("cmd", "templates", "css", "style.css"),
-		filepath.Join(publicJSDir, "app.js"):                  filepath.Join("cmd", "templates", "js", "index.js"),
-		filepath.Join(publicLibDir, "htmx.min.js"):            filepath.Join("cmd", "templates", "lib", "htmx.min.js"), // Adjust as needed
-		filepath.Join(routesDir, "userRoutes.go"):             filepath.Join("cmd", "templates", "go", "userRoutes.go"),
-		filepath.Join(controllersDir, "CreateUserHandler.go"): filepath.Join("cmd", "templates", "go", "userHandler.go"),
-		filepath.Join(baseDir, "app.go"):                      filepath.Join("cmd", "templates", "go", "app.go"),
-		filepath.Join(baseDir, "Makefile"):                      filepath.Join("cmd", "templates", "Makefile"),
+		filepath.Join(viewDir, "index.html"):                  filepath.Join("templates", "html", "index.html"),
+		filepath.Join(publicCSSDir, "style.css"):              filepath.Join("templates", "css", "style.css"),
+		filepath.Join(publicJSDir, "app.js"):                  filepath.Join("templates", "js", "index.js"),
+		filepath.Join(publicLibDir, "htmx.min.js"):            filepath.Join("templates", "lib", "htmx.min.js"), // Adjust as needed
+		filepath.Join(routesDir, "userRoutes.go"):             filepath.Join("templates", "go", "userRoutes.go"),
+		filepath.Join(controllersDir, "CreateUserHandler.go"): filepath.Join("templates", "go", "userHandler.go"),
+		filepath.Join(baseDir, "app.go"):                      filepath.Join("templates", "go", "app.go"),
+		filepath.Join(baseDir, "Makefile"):                    filepath.Join("templates", "Makefile"),
 	}
 
 	// Create directories
@@ -110,3 +111,4 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
