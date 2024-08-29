@@ -15,7 +15,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var templateFs embed.FS
+var (
+	templateFs embed.FS
+	baseDir    string
+)
 
 // readTemplateFile reads the content of a template file and replaces {AppName} with the baseDir.
 func readTemplateFile(filePath string) (string, error) {
