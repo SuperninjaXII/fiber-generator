@@ -1,10 +1,11 @@
 package main
 
 import (
-	"{AppName}/routes"
 	"log"
+	"{AppName}/routes"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 )
 
 func main() {

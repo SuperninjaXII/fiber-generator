@@ -6,6 +6,6 @@ import (
 
 func User(c fiber.Ctx) error {
 	return c.Render("user", fiber.Map{
-	  "Text":"users page"
+		"Text": "users page",
 	})
 }
