@@ -1,4 +1,4 @@
-module github.com/SuperninjaXII/Fiber-generator
+module github.com/SuperninjaXII/fiber-generator
 
 go 1.22.3
 
