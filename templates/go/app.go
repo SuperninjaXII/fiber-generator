@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/"
+	"strings"
 	"{AppName}/routes"
 
 	"github.com/aarol/reload"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/template/html/v2"
 )
 
@@ -23,7 +27,50 @@ func main() {
 	// Serve static files from the "public" folder
 	app.Static("/", "./public")
 
-	// Define a route to render the index page
+	if isDevelopment {
+		// Create a new reloader instance
+		reloader := reload.New("views/", "public/")
+
+		// Optional: Log when reload is triggered
+		reloader.OnReload = func() {
+			log.Println("Reload triggered")
+		}
+
+		// Create WebSocket endpoint for reload notifications
+		app.Get("/reload_ws", adaptor.HTTPHandler(
+			http.HandlerFunc(reloader.ServeWS),
+		))
+
+		// Add middleware to inject reload script
+		app.Use(func(c *fiber.Ctx) error {
+			// Only inject script into HTML responses
+			if strings.Contains(c.Get("Content-Type"), "text/html") {
+				response := c.Response()
+				body := response.Body()
+
+				// Inject the reload script before closing </body> tag
+				script := reload.InjectedScript("/reload_ws")
+				newBody := strings.Replace(
+					string(body),
+					"</body>",
+					fmt.Sprintf("%s</body>", script),
+					1,
+				)
+
+				response.SetBody([]byte(newBody))
+			}
+
+			// Disable caching in development
+			c.Set("Cache-Control", "no-cache")
+
+			return c.Next()
+		})
+
+		// Start the file watcher
+		go reloader.WatchDirectories()
+	}
+
+	// Define routes
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("index", fiber.Map{
 			"Title": "Fiber App with Reload",
@@ -32,20 +79,6 @@ func main() {
 
 	// Setup user-defined routes
 	routes.User(app)
-
-	// Add the reload middleware in development mode
-	if isDevelopment {
-		reloader := reload.New("views/", "public/") // Watch views and public directories
-		reloader.OnReload = func() {
-			log.Println("Reload triggered")
-		}
-
-		reloadMiddleware := fiber.WrapHTTPHandler(reloader.Handle(app.Handler()))
-		app.Use(func(c *fiber.Ctx) error {
-			reloadMiddleware.ServeHTTP(c.Context(), c.Context().Request())
-			return nil
-		})
-	}
 
 	// Start the server
 	log.Fatal(app.Listen(":3000"))
